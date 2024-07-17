@@ -1,0 +1,5 @@
+log:
+  debug: true
+  local: true
+  app_id: taskapi
+  env: dev
