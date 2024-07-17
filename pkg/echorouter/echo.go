@@ -1,11 +1,13 @@
 package echorouter
 
 import (
+	"context"
 	"net/http"
 	"taskapi/pkg/errors"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+	"go.uber.org/fx"
 )
 
 // Config setting http config
@@ -75,4 +77,30 @@ func setDefaultRoute(e *echo.Echo, cfg *Config) {
 	if !cfg.DisablePprof {
 		RegisterPprofRouter(e)
 	}
+}
+
+// FxNewEcho create new echo server with fx lifecycle
+func FxNewEcho(cfg *Config, lc fx.Lifecycle) *echo.Echo {
+	e := NewEcho(cfg)
+	lc.Append(fx.Hook{
+		OnStart: func(context.Context) error {
+			log.Info().Msgf("Starting echo server, listen on %s", cfg.Address)
+			go func() {
+				err := e.Start(cfg.Address)
+				if err != nil {
+					if err == http.ErrServerClosed {
+						log.Info().Msg("Echo server closed.")
+					} else {
+						log.Error().Msgf("Error echo server, err: %s", err.Error())
+					}
+				}
+			}()
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			log.Info().Msg("Stopping echo server.")
+			return e.Shutdown(ctx)
+		},
+	})
+	return e
 }

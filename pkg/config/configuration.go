@@ -7,6 +7,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"go.uber.org/fx"
 )
 
 var _config *Config
@@ -23,6 +24,8 @@ func Set(config *Config) {
 
 // Config ...
 type Config struct {
+	fx.Out
+
 	Log  *zerolog.Config    `yaml:"log"`
 	HTTP *echorouter.Config `yaml:"http"`
 }

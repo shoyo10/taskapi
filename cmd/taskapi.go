@@ -1,12 +1,16 @@
 package cmd
 
 import (
+	"context"
 	"os"
 	"taskapi/pkg/config"
+	"taskapi/pkg/echorouter"
 	"taskapi/pkg/zerolog"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"go.uber.org/fx"
 )
 
 // ServerCmd ...
@@ -23,5 +27,27 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	zerolog.Init(cfg.Log)
-	log.Debug().Msgf("Config: %+v", cfg)
+
+	app := fx.New(
+		fx.Supply(*cfg),
+		fx.Invoke(
+			echorouter.FxNewEcho,
+		),
+	)
+
+	if err := app.Start(context.Background()); err != nil {
+		log.Error().Msg(err.Error())
+		return
+	}
+
+	<-app.Done()
+
+	log.Info().Msgf("main: shutting down %s...", cmd.Name())
+
+	stopCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := app.Stop(stopCtx); err != nil {
+		log.Error().Msg(err.Error())
+	}
 }

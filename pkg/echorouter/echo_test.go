@@ -2,6 +2,7 @@ package echorouter
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/fx"
 )
 
 func TestNewEcho(t *testing.T) {
@@ -61,4 +63,21 @@ func request(method, path string, e *echo.Echo) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, req)
 	return rec
+}
+
+func TestFxNewEcho(t *testing.T) {
+	var e *echo.Echo
+	app := fx.New(
+		fx.Supply(&Config{}),
+		fx.Provide(FxNewEcho),
+		fx.Populate(&e),
+	)
+	err := app.Start(context.Background())
+	assert.Nil(t, err)
+
+	defer app.Stop(context.Background())
+
+	rec := request(http.MethodGet, "/ping", e)
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "pong", rec.Body.String())
 }
