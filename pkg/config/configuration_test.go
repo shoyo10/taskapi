@@ -21,6 +21,5 @@ func TestNewWithSettingEnv(t *testing.T) {
 
 func TestNewWithoutSettingEnv(t *testing.T) {
 	_, err := New()
-	t.Log(err)
 	assert.ErrorContains(t, err, `Config File "app" Not Found in`)
 }

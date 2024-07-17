@@ -1,6 +1,7 @@
 package config
 
 import (
+	"taskapi/pkg/echorouter"
 	"taskapi/pkg/zerolog"
 
 	"github.com/mitchellh/mapstructure"
@@ -22,7 +23,8 @@ func Set(config *Config) {
 
 // Config ...
 type Config struct {
-	Log *zerolog.Config `yaml:"log"`
+	Log  *zerolog.Config    `yaml:"log"`
+	HTTP *echorouter.Config `yaml:"http"`
 }
 
 // New read config from file
