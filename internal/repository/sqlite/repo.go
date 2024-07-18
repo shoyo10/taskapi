@@ -46,7 +46,7 @@ func (r *repo) ListTask(ctx context.Context) ([]model.Task, error) {
 	return tasks, nil
 }
 
-func (r *repo) UpdateTask(ctx context.Context, filter repository.TaskFilter, in repository.UpdateTaskInput) error {
+func (r *repo) UpdateTask(ctx context.Context, filter model.TaskFilter, in model.UpdateTaskInput) error {
 	result := r.Ctx(ctx).Model(&model.Task{}).Where("id = ?", filter.ID).Omit("id").Updates(&in)
 	rawEffected, err := result.RowsAffected, result.Error
 	if err != nil {
@@ -62,7 +62,7 @@ func (r *repo) UpdateTask(ctx context.Context, filter repository.TaskFilter, in 
 	return nil
 }
 
-func (r *repo) DeleteTask(ctx context.Context, filter repository.TaskFilter) error {
+func (r *repo) DeleteTask(ctx context.Context, filter model.TaskFilter) error {
 	err := r.Ctx(ctx).Where("id = ?", filter.ID).Delete(&model.Task{}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

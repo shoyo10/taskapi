@@ -97,7 +97,7 @@ func (s *taskDBSuite) TestListTask() {
 
 func (s *taskDBSuite) TestUpdateTask() {
 	ctx := context.Background()
-	err := s.repo.UpdateTask(ctx, repository.TaskFilter{ID: 1}, repository.UpdateTaskInput{})
+	err := s.repo.UpdateTask(ctx, model.TaskFilter{ID: 1}, model.UpdateTaskInput{})
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, errors.ErrResourceNotFound)
 
@@ -110,7 +110,7 @@ func (s *taskDBSuite) TestUpdateTask() {
 
 	name := "task1 updated"
 	status := model.TaskStatusIncomplete
-	err = s.repo.UpdateTask(ctx, repository.TaskFilter{ID: task1.ID}, repository.UpdateTaskInput{
+	err = s.repo.UpdateTask(ctx, model.TaskFilter{ID: task1.ID}, model.UpdateTaskInput{
 		Name:   &name,
 		Status: &status,
 	})
@@ -132,7 +132,7 @@ func (s *taskDBSuite) TestDeleteTask() {
 	s.Require().Equal(task1.Name, dbTask.Name)
 	s.Require().Equal(task1.Status, dbTask.Status)
 
-	err := s.repo.DeleteTask(ctx, repository.TaskFilter{ID: task1.ID})
+	err := s.repo.DeleteTask(ctx, model.TaskFilter{ID: task1.ID})
 	s.Require().NoError(err)
 
 	err = s.conn.First(&dbTask, task1.ID).Error

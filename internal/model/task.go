@@ -17,3 +17,12 @@ type Task struct {
 func (*Task) TableName() string {
 	return "tasks"
 }
+
+type TaskFilter struct {
+	ID int
+}
+
+type UpdateTaskInput struct {
+	Name   *string
+	Status *EnumTaskStatus
+}
