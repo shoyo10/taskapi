@@ -9,6 +9,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
+
+	_ "taskapi/docs"
+
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // Config setting http config
@@ -43,6 +47,7 @@ func NewEcho(cfg *Config) *echo.Echo {
 	e.Use(MiddlewareRecover())
 
 	e.Validator = &CustomValidator{validator: validator.New()}
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	setDefaultRoute(e, cfg)
 

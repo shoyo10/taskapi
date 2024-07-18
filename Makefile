@@ -22,3 +22,6 @@ docker-run:
 
 docker-stop:
 	docker stop taskserver
+
+swagger:
+	swag init -g internal/delivery/http/route.go

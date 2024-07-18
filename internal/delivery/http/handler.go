@@ -32,6 +32,10 @@ type listTaskRespData struct {
 	Status model.EnumTaskStatus `json:"status"`
 }
 
+// @Title  ListTask
+// @Description list all tasks
+// @Success 200 {object} listTaskResp
+// @Router /tasks [get]
 func (h *handler) ListTask(c echo.Context) error {
 	ctx := c.Request().Context()
 	result, err := h.svc.ListTask(ctx)
@@ -64,6 +68,12 @@ type createTaskRespData struct {
 	ID int `json:"id"`
 }
 
+// @Title  CreateTask
+// @Description create a task
+// @Param reqBody body createTaskReq true "task fields"
+// @Success 200 {object} createTaskResp "task id"
+// @Failure 400 object errors.HTTPError
+// @Router /tasks [post]
 func (h *handler) CreateTask(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -99,6 +109,14 @@ type updateTaskParam struct {
 	ID int `param:"id" validate:"required"`
 }
 
+// @Title  UpdateTask
+// @Description update a task
+// @Param id path int true "task id"
+// @Param reqBody body updateTaskReq true "update task fields"
+// @Success 200
+// @Failure 400 object errors.HTTPError
+// @Failure 404 object errors.HTTPError
+// @Router /tasks/{id} [put]
 func (h *handler) UpdateTask(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -136,6 +154,13 @@ type deleteTaskParam struct {
 	ID int `param:"id" validate:"required"`
 }
 
+// @Title  DeleteTask
+// @Description delete a task
+// @Param id path int true "task id"
+// @Success 200
+// @Failure 400 object errors.HTTPError
+// @Failure 404 object errors.HTTPError
+// @Router /tasks/{id} [delete]
 func (h *handler) DeleteTask(c echo.Context) error {
 	ctx := c.Request().Context()
 
