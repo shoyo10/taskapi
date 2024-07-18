@@ -4,10 +4,11 @@ import (
 	"context"
 	"os"
 	"taskapi/internal/delivery/http"
-	"taskapi/internal/repository"
+	sqliterepo "taskapi/internal/repository/sqlite"
 	"taskapi/internal/service"
 	"taskapi/pkg/config"
 	"taskapi/pkg/echorouter"
+	"taskapi/pkg/sqlite"
 	"taskapi/pkg/zerolog"
 	"time"
 
@@ -34,7 +35,8 @@ func run(cmd *cobra.Command, args []string) {
 	app := fx.New(
 		fx.Supply(*cfg),
 		fx.Provide(
-			repository.New,
+			sqlite.New,
+			sqliterepo.New,
 			service.New,
 			echorouter.FxNewEcho,
 			http.NewHandler,

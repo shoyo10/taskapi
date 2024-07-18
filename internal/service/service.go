@@ -6,7 +6,7 @@ type service struct {
 	repo repository.Repositorier
 }
 
-// NewService ...
+// New ...
 func New(repo repository.Repositorier) (Servicer, error) {
 	return &service{
 		repo: repo,
