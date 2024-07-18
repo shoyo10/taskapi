@@ -13,3 +13,12 @@ unit-test:
 mockgen:
 	mockgen -source internal/repository/interface.go -destination=internal/repository/mocks/mock_repository.go -package=mocks
 	mockgen -source internal/service/interface.go -destination=internal/service/mocks/mock_service.go -package=mocks
+
+docker-build:
+	docker build -f build/docker/Dockerfile -t taskapiserver .
+
+docker-run:
+	docker run --name taskserver -d --rm -p 9090:9090 taskapiserver
+
+docker-stop:
+	docker stop taskserver
