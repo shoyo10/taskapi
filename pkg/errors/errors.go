@@ -9,7 +9,7 @@ import (
 
 type _err struct {
 	Code     string
-	HTTPCode int
+	HTTPCode int    `json:"-"`
 	Message  string `json:"message"`
 }
 

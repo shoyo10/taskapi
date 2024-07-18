@@ -63,12 +63,17 @@ func (r *repo) UpdateTask(ctx context.Context, filter model.TaskFilter, in model
 }
 
 func (r *repo) DeleteTask(ctx context.Context, filter model.TaskFilter) error {
-	err := r.Ctx(ctx).Where("id = ?", filter.ID).Delete(&model.Task{}).Error
+	result := r.Ctx(ctx).Where("id = ?", filter.ID).Delete(&model.Task{})
+	rawEffected, err := result.RowsAffected, result.Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.Wrapf(errors.ErrResourceNotFound, "%v", err)
 		}
 		return errors.Wrapf(errors.ErrInternalServerError, "%v", err)
+	}
+	if rawEffected == 0 {
+		return errors.Wrapf(errors.ErrResourceNotFound, "task with filter %v not found", filter)
+
 	}
 	return nil
 }

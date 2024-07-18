@@ -137,4 +137,7 @@ func (s *taskDBSuite) TestDeleteTask() {
 
 	err = s.conn.First(&dbTask, task1.ID).Error
 	s.Require().ErrorIs(err, gorm.ErrRecordNotFound)
+
+	err = s.repo.DeleteTask(ctx, model.TaskFilter{ID: task1.ID})
+	s.Require().ErrorIs(err, errors.ErrResourceNotFound)
 }

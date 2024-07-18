@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"taskapi/pkg/errors"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
@@ -41,6 +42,8 @@ func NewEcho(cfg *Config) *echo.Echo {
 	e.Use(MiddlewareCorsConfig)
 	e.Use(MiddlewareRecover())
 
+	e.Validator = &CustomValidator{validator: validator.New()}
+
 	setDefaultRoute(e, cfg)
 
 	return e
@@ -53,6 +56,22 @@ func NotFoundHandler(c echo.Context) error {
 
 // ErrorHandler responds error response according to given error.
 func ErrorHandler(err error, c echo.Context) {
+	req := c.Request()
+	resp := c.Response()
+	resp.After(func() {
+		status := resp.Status
+		logger := log.Ctx(req.Context()).With().
+			Str("method", req.Method).
+			Str("uri", req.RequestURI).
+			Int("status", status).Logger()
+		switch {
+		case status >= http.StatusInternalServerError:
+			logger.Error().Msgf("%+v", err)
+		default:
+			logger.Debug().Msgf("%+v", err)
+		}
+	})
+
 	echoErr, ok := err.(*echo.HTTPError)
 	if ok {
 		err = c.JSON(echoErr.Code, echoErr)
@@ -103,4 +122,16 @@ func FxNewEcho(cfg *Config, lc fx.Lifecycle) *echo.Echo {
 		},
 	})
 	return e
+}
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	if err := cv.validator.Struct(i); err != nil {
+		// Optionally, you could return the error to give each route more control over the status code
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return nil
 }

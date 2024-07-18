@@ -12,3 +12,4 @@ unit-test:
 
 mockgen:
 	mockgen -source internal/repository/interface.go -destination=internal/repository/mocks/mock_repository.go -package=mocks
+	mockgen -source internal/service/interface.go -destination=internal/service/mocks/mock_service.go -package=mocks
