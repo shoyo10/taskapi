@@ -3,6 +3,9 @@ package cmd
 import (
 	"context"
 	"os"
+	"taskapi/internal/delivery/http"
+	"taskapi/internal/repository"
+	"taskapi/internal/service"
 	"taskapi/pkg/config"
 	"taskapi/pkg/echorouter"
 	"taskapi/pkg/zerolog"
@@ -30,8 +33,14 @@ func run(cmd *cobra.Command, args []string) {
 
 	app := fx.New(
 		fx.Supply(*cfg),
-		fx.Invoke(
+		fx.Provide(
+			repository.New,
+			service.New,
 			echorouter.FxNewEcho,
+			http.NewHandler,
+		),
+		fx.Invoke(
+			http.SetRoutes,
 		),
 	)
 
