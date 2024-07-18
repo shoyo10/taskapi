@@ -10,8 +10,8 @@ func TestNew(t *testing.T) {
 	db, err := New()
 	assert.Nil(t, err)
 
-	db.AutoMigrate(&ABC{})
-
+	err = db.AutoMigrate(&ABC{})
+	assert.Nil(t, err)
 	data := ABC{
 		Name: "test",
 	}
